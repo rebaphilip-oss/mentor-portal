@@ -565,7 +565,7 @@ def show_assigned_students(students):
 
             with col3:
                 foundation = student.get("foundation_student", "") or "—"
-                st.markdown("**Foundation Student?**")
+                st.markdown("**Is this a Foundation Student?**")
                 st.markdown(foundation)
 
 # VIEW B: CONFIRMED STUDENTS
