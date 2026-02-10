@@ -542,45 +542,31 @@ def show_assigned_students(students):
     filtered = [s for s in students if search.lower() in s["name"].lower()] if search else students
 
     for student in filtered:
-        with st.container():
-            st.markdown(
-                f'<div class="student-card">'
-                f'<div style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;">{student["name"]}</div>'
-                f'</div>',
-                unsafe_allow_html=True
-            )
-
+        with st.expander(student["name"]):
             col1, col2, col3 = st.columns(3)
 
             with col1:
-                st.markdown("**Mentor Confirmed Match?**")
-                val = student["mentor_confirmation"]
-                if val == "Yes":
-                    st.success("Yes")
-                elif val:
-                    st.warning(val)
+                confirmation = student["mentor_confirmation"] or "—"
+                if confirmation == "Yes":
+                    st.markdown("**Mentor Confirmed Student Match?**")
+                    st.markdown(':green[Yes]')
                 else:
-                    st.caption("—")
+                    st.markdown("**Mentor Confirmed Student Match?**")
+                    st.markdown(f':orange[{confirmation}]' if confirmation != "—" else confirmation)
 
             with col2:
-                st.markdown("**Background Shared?**")
-                val = student["background_shared"]
-                if val == "Yes":
-                    st.success("Yes")
-                elif val:
-                    st.warning(val)
+                shared = student["background_shared"] or "—"
+                if shared == "Yes":
+                    st.markdown("**Mentor Background Shared with Student?**")
+                    st.markdown(':green[Yes]')
                 else:
-                    st.caption("—")
+                    st.markdown("**Mentor Background Shared with Student?**")
+                    st.markdown(f':orange[{shared}]' if shared != "—" else shared)
 
             with col3:
+                foundation = student.get("foundation_student", "") or "—"
                 st.markdown("**Foundation Student?**")
-                val = student.get("foundation_student", "")
-                if val:
-                    st.info(val)
-                else:
-                    st.caption("—")
-
-            st.markdown("---")
+                st.markdown(foundation)
 
 # VIEW B: CONFIRMED STUDENTS
 def show_confirmed_students(students):
