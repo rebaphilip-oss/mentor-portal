@@ -535,70 +535,25 @@ def show_assigned_students(students):
         st.info("No students assigned to you yet.")
         return
 
-    # Build styled table
-    def badge(text, color):
-        colors = {
-            "green": ("background-color: #DEF7EC; color: #03543F;", text),
-            "yellow": ("background-color: #FEF3C7; color: #92400E;", text),
-            "orange": ("background-color: #FDE8E8; color: #9B1C1C;", text),
-            "gray": ("", text),
-        }
-        style, label = colors.get(color, ("", text))
-        if style:
-            return f'<span style="{style} padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">{label}</span>'
-        return label or "-"
-
-    def format_cell(value):
-        if not value:
-            return "-"
-        val = str(value).strip()
-        if val.lower() == "yes":
-            return badge("Yes", "green")
-        elif val.lower() == "no":
-            return badge("No", "orange")
-        elif "clarification" in val.lower():
-            return badge(val, "orange")
-        return val
-
-    # Build table rows
-    rows_html = ""
-    for s in students:
-        rows_html += f"""
-        <tr>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">{s['name']}</td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #E5E7EB; text-align: center;">{format_cell(s['mentor_confirmation'])}</td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #E5E7EB; text-align: center;">{format_cell(s['background_shared'])}</td>
-            <td style="padding: 12px 16px; border-bottom: 1px solid #E5E7EB; text-align: center;">{format_cell(s.get('foundation_student', ''))}</td>
-        </tr>
-        """
-
     record_count = len(students)
-    table_html = f"""
-    <div style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; margin-top: 1rem;">
-        <div style="padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 1.15rem; font-weight: 600;">Your Assigned Students</span>
-            <span style="background-color: #FEF3C7; color: #92400E; padding: 2px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">{record_count} records</span>
-        </div>
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color: #F9FAFB;">
-                    <th style="padding: 12px 16px; text-align: left; font-size: 0.85rem; font-weight: 600; color: #374151; border-bottom: 2px solid #E5E7EB;">Student Name, Cohort, and Program</th>
-                    <th style="padding: 12px 16px; text-align: center; font-size: 0.85rem; font-weight: 600; color: #374151; border-bottom: 2px solid #E5E7EB;">Mentor Confirmed Student Match?</th>
-                    <th style="padding: 12px 16px; text-align: center; font-size: 0.85rem; font-weight: 600; color: #374151; border-bottom: 2px solid #E5E7EB;">Mentor Background Shared with Student?</th>
-                    <th style="padding: 12px 16px; text-align: center; font-size: 0.85rem; font-weight: 600; color: #374151; border-bottom: 2px solid #E5E7EB;">Is this a Foundation Student?</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows_html}
-            </tbody>
-        </table>
-        <div style="padding: 12px 20px; border-top: 1px solid #E5E7EB; font-size: 0.85rem; color: #6B7280;">
-            Show {record_count} records per page
-        </div>
-    </div>
-    """
+    st.markdown(f"**Your Assigned Students** &nbsp; `{record_count} records`")
 
-    st.markdown(table_html, unsafe_allow_html=True)
+    # Build dataframe for display
+    df = pd.DataFrame([
+        {
+            "Student Name, Cohort, and Program": s["name"],
+            "Mentor Confirmed Student Match?": s["mentor_confirmation"] or "-",
+            "Mentor Background Shared with Student?": s["background_shared"] or "-",
+            "Is this a Foundation Student?": s.get("foundation_student", "") or "-",
+        }
+        for s in students
+    ])
+
+    st.dataframe(
+        df,
+        use_container_width=True,
+        hide_index=True,
+    )
 
 # VIEW B: CONFIRMED STUDENTS
 def show_confirmed_students(students):
