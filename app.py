@@ -547,9 +547,10 @@ def show_assigned_students(students):
 
     st.markdown(f"**Your Assigned Students** — {len(students)} records")
 
-    # Search filter
-    search = st.text_input("Search students", placeholder="Type a name to filter...", label_visibility="collapsed", key="assigned_search")
-    filtered = [s for s in students if search.lower() in s["name"].lower()] if search else students
+    # Student filter
+    student_names = ["All Students"] + [s["name"] for s in students]
+    selected = st.selectbox("Filter by student", student_names, label_visibility="collapsed", key="assigned_filter")
+    filtered = students if selected == "All Students" else [s for s in students if s["name"] == selected]
 
     for student in filtered:
         with st.expander(student["name"]):
@@ -652,7 +653,10 @@ def show_student_background(student):
 
     with col3:
         st.markdown("**📧 Program Manager Email**")
-        st.markdown(student.get("program_manager_email") or "Not specified")
+        pm_email = student.get("program_manager_email") or "Not specified"
+        if isinstance(pm_email, list):
+            pm_email = pm_email[0] if pm_email else "Not specified"
+        st.markdown(pm_email)
 
         st.markdown("**📅 Student's Revised Final Paper Due Date**")
         st.markdown(format_date(student.get("revised_final_paper_due", "")))
