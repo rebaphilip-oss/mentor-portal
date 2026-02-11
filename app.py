@@ -342,7 +342,9 @@ def format_date(date_str):
         return "Not set"
     try:
         date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-        return date_obj.strftime("%b %#d, %Y")
+        day = date_obj.day
+        suffix = "th" if 11 <= day <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(day % 10, "th")
+        return f"{date_obj.strftime('%B')} {day}{suffix}, {date_obj.year}"
     except:
         return date_str
 
