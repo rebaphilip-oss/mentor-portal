@@ -244,6 +244,12 @@ def get_students_for_mentor(mentor_name):
         formula = f"FIND('{mentor_name}', ARRAYJOIN({{Mentor Name}}))"
         records = tables["students"].all(formula=formula)
 
+        # DEBUG: Show actual field names for first record (remove after fixing)
+        if records:
+            paper_fields = [k for k in records[0]["fields"].keys() if "paper" in k.lower() or "due" in k.lower() or "revised" in k.lower()]
+            if paper_fields:
+                st.warning(f"DEBUG - Matching field names: {paper_fields}")
+
         students = []
         for record in records:
             fields = record["fields"]
